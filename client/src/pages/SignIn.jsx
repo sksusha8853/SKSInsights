@@ -1,12 +1,15 @@
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { signInFailure, signInStart, signInSuccess } from '../redux/user/userSlice'; // Adjusted import path
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(false);
+  const { loading, error: errorMessage } = useSelector(state => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
@@ -14,28 +17,26 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
-      return setErrorMessage('All fields are required!');
+      return dispatch(signInFailure('All fields are required!'));
     }
     try {
-      setLoading(true);
-      setErrorMessage(null);
-      const res = await fetch('api/auth/signin', {
+      dispatch(signInStart());
+      const res = await fetch('/api/auth/signin', { // Ensure the endpoint is correct
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
       const text = await res.text(); // Read the response as text
       const data = text ? JSON.parse(text) : {}; // Parse the text if it's not empty
-      if (data.success === false) {
-        setErrorMessage(data.message);
+
+      if (!res.ok || data.success === false) {
+        return dispatch(signInFailure(data.message || 'Failed to sign in!'));
       }
-      setLoading(false);
-      if(res.ok){
-        navigate('/');
-      }
+
+      dispatch(signInSuccess(data));
+      navigate('/');
     } catch (error) {
-      setErrorMessage(error.message);
-      setLoading(false);
+      return dispatch(signInFailure(error.message));
     }
   };
 
@@ -50,7 +51,7 @@ export default function SignIn() {
               placeholder="Email"
               id="email"
               onChange={handleChange}
-            ></TextInput>
+            />
           </div>
           <div>
             <Label value="Your Password" />
@@ -59,13 +60,13 @@ export default function SignIn() {
               placeholder="Password"
               id="password"
               onChange={handleChange}
-            ></TextInput>
+            />
           </div>
           <Button gradientDuoTone="purpleToBlue" type="submit" disabled={loading}>
             {loading ? (
               <>
-                <Spinner size='sm' />
-                <span className='pl-3'> Loading...</span>
+                <Spinner size="sm" />
+                <span className="pl-3">Loading...</span>
               </>
             ) : 'Sign In'}
           </Button>
@@ -77,7 +78,7 @@ export default function SignIn() {
           </Link>
         </div>
         {errorMessage && (
-          <Alert className='mt-5' color='failure'>
+          <Alert className="mt-5" color="failure">
             {errorMessage}
           </Alert>
         )}
