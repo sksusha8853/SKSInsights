@@ -6,8 +6,8 @@ import About from './pages/About'
 import SignIn from './pages/SignIn'
 import SignUp from './pages/SignUp'
 import Projects from './pages/Projects'
-import Header from './components.jsx/Header'
-import Footer from './components.jsx/Footer'
+import Header from './components/Header'
+import Footer from './components/Footer'
 
 
 export default function App() {
