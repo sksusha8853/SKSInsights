@@ -1,6 +1,6 @@
 import { errHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs';
-import User from '../models/user.model.js'; 
+import User from '../models/user.model.js';
 
 export const test = (req, res) => {
     res.json({ message: 'API is working fine!' });
@@ -52,7 +52,7 @@ export const updateUser = async (req, res, next) => {
 };
 
 export const deleteUser = async (req, res, next) => {
-    if(req.user.id != req.params.userId){
+    if (req.user.id != req.params.userId) {
         return next(errHandler(404, 'You are not allowed to delete this account.'));
 
     }
@@ -60,7 +60,19 @@ export const deleteUser = async (req, res, next) => {
         await User.findByIdAndDelete(req.params.userId);
         res.status(200).json('Account deleted.');
     }
-    catch(err){
+    catch (err) {
         next(err);
     }
 }
+
+export const signout = (req, res, next) => {
+    try {
+        res
+            .clearCookie('access_token')
+            .status(200)
+            .json('Signed Out Successfully.');
+    }
+    catch (err) {
+        next(err);
+    }
+};

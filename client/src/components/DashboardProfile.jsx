@@ -5,8 +5,16 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { app } from '../firebase';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import { updateStart, updateFailure, updateSuccess, deleteUserStart, deleteUserFailure, deleteUserSuccess } from '../redux/user/userSlice';
-import {HiOutlineExclamationCircle} from 'react-icons/hi';
+import {
+    updateStart,
+    updateFailure,
+    updateSuccess,
+    deleteUserStart,
+    deleteUserFailure,
+    deleteUserSuccess,
+    signOutSuccess,
+} from '../redux/user/userSlice';
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
 
 export default function DashboardProfile() {
     const { currentUser, error } = useSelector((state) => state.user);
@@ -74,26 +82,46 @@ export default function DashboardProfile() {
         }
     };
 
-    const handleDeleteUser = async ()=> {
+    const handleDeleteUser = async () => {
         setShowModal(false);
-        try{
+        try {
             dispatch(deleteUserStart());
-            const res = await fetch(`/api/user/delete/${currentUser._id}`,{
+            const res = await fetch(`/api/user/delete/${currentUser._id}`, {
                 method: 'DELETE',
             });
             const data = await res.json();
-            if(!res.ok){
+            if (!res.ok) {
                 dispatch(deleteUserFailure(data.message));
 
             }
-            else{
+            else {
                 dispatch(deleteUserSuccess(data));
 
             }
-        }catch(error){
+        } catch (error) {
             dispatch(deleteUserFailure(error.message));
 
         }
+    };
+
+    const handleSignOut = async () => {
+
+        try {
+            const res = await fetch('/api/user/signout', {
+                method: 'POST',
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.log(data.message);
+            }
+            else {
+                dispatch(signOutSuccess());
+            }
+        }
+        catch (err) {
+            console.log(err.message);
+        }
+
     };
 
     const filePickerRef = useRef();
@@ -201,8 +229,8 @@ export default function DashboardProfile() {
                 </Button>
             </form>
             <div className='text-red-500 flex justify-between mt-5'>
-                <span onClick={()=>setShowModal(true)} className='cursor-pointer'>Delete Account</span>
-                <span className='cursor-pointer'>Sign Out</span>
+                <span onClick={() => setShowModal(true)} className='cursor-pointer'>Delete Account</span>
+                <span onClick={handleSignOut} className='cursor-pointer'>Sign Out</span>
             </div>
             {updateUserSuccess && (
                 <Alert color='success' className='mt-4'>
@@ -219,17 +247,17 @@ export default function DashboardProfile() {
                     {error}
                 </Alert>
             )}
-            <Modal show={showModal} onClose={()=>setShowModal(false)} popup size='md'>
+            <Modal show={showModal} onClose={() => setShowModal(false)} popup size='md'>
                 <Modal.Header></Modal.Header>
                 <Modal.Body>
                     <div className='text-center'>
-                        <HiOutlineExclamationCircle className='h-15 w-15 text-gray-400 dark:text-gray-200 mb-4 mx-auto'/>
+                        <HiOutlineExclamationCircle className='h-15 w-15 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
                         <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-300'>Are you sure want to delete your account?</h3>
                         <div className='flex justify-center gap-5'>
                             <Button color='failure' onClick={handleDeleteUser}>
                                 Yes, I'm sure.
                             </Button>
-                            <Button color='gray' onClick={()=> setShowModal(false)}>No, cancel.</Button>
+                            <Button color='gray' onClick={() => setShowModal(false)}>No, cancel.</Button>
                         </div>
                     </div>
                 </Modal.Body>
