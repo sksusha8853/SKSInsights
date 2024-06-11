@@ -8,6 +8,7 @@ import OAuth from '../components/OAuth';
 export default function SignIn() {
   const [formData, setFormData] = useState({});
   const { loading, error: errorMessage } = useSelector(state => state.user);
+  const { theme } = useSelector(state => state.theme);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
@@ -42,25 +43,27 @@ export default function SignIn() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div style={{ maxWidth: '36rem' }} className="w-4/5 bg-white p-8 shadow-lg mx-auto mt-5">
+    <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900 text-gray-200' : 'bg-gray-100 text-gray-900'}`}>
+      <div style={{ maxWidth: '36rem' }} className={`w-4/5 p-8 shadow-lg mx-auto mt-5 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
         <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
           <div>
-            <Label value="Your Email" />
+            <Label value="Your Email" className={theme === 'dark' ? 'text-gray-200' : ''} />
             <TextInput
               type="text"
               placeholder="Email"
               id="email"
               onChange={handleChange}
+              className={theme === 'dark' ? 'text-gray-900' : ''}
             />
           </div>
           <div>
-            <Label value="Your Password" />
+            <Label value="Your Password" className={theme === 'dark' ? 'text-gray-200' : ''} />
             <TextInput
               type="password"
               placeholder="Password"
               id="password"
               onChange={handleChange}
+              className={theme === 'dark' ? 'text-gray-900' : ''}
             />
           </div>
           <Button gradientDuoTone="purpleToBlue" type="submit" disabled={loading}>
@@ -71,7 +74,7 @@ export default function SignIn() {
               </>
             ) : 'Sign In'}
           </Button>
-          <OAuth/>
+          <OAuth />
         </form>
         <div className="flex gap-2 text-sm mt-2">
           <span>Don't have an account?</span>
