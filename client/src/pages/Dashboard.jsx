@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import DashboardSidebar from '../components/DashboardSidebar';
 import DashboardProfile from '../components/DashboardProfile';
 import DashboardPosts from '../components/DashboardPosts';
+import DashboardUsers from '../components/DashboardUsers';
 
 export default function Dashboard() {
   const location = useLocation();
@@ -27,8 +28,9 @@ export default function Dashboard() {
       {/* Content Area */}
       <div className='flex-1 p-4'>
         {tab === 'profile' && <DashboardProfile />}
-        {/* Add other conditional tab components here */}
         {tab === 'posts' && <DashboardPosts/>}
+        {tab === 'users' && <DashboardUsers/>}
+
       </div>
     </div>
   );
