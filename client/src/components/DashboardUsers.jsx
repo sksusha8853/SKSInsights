@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
 import { Modal } from 'flowbite-react';
-import {FaCheck, FaTimes} from 'react-icons/fa';
+import { FaCheck, FaTimes } from 'react-icons/fa';
 
 export default function DashboardUsers() {
     const { currentUser } = useSelector(state => state.user);
@@ -15,7 +15,22 @@ export default function DashboardUsers() {
 
     const handleDeleteUser = async () => {
         setShowModal(false);
-        // Implement deletion logic here
+        try {
+            const res = await fetch(`/api/user/delete/${userIdToDelete}`,{
+                method: 'DELETE',
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.log(data.message);
+            }
+            else {
+                setUsers((prev) =>
+                    prev.filter((user) => user._id !== userIdToDelete));
+            }
+        }
+        catch (error) {
+            console.log(error.message);
+        }
     };
 
     useEffect(() => {
@@ -95,7 +110,7 @@ export default function DashboardUsers() {
                                     </Table.Cell>
                                     <Table.Cell>{user.username}</Table.Cell>
                                     <Table.Cell>{user.email}</Table.Cell>
-                                    <Table.Cell>{user.isAdmin ? (<FaCheck className='text-green-500'/>) : (<FaTimes className='text-red-500'/>)}</Table.Cell>
+                                    <Table.Cell>{user.isAdmin ? (<FaCheck className='text-green-500' />) : (<FaTimes className='text-red-500' />)}</Table.Cell>
                                     <Table.Cell>
                                         <span
                                             onClick={() => {
@@ -126,7 +141,7 @@ export default function DashboardUsers() {
             <Modal show={showModal} onClose={() => setShowModal(false)} popup size='md'>
                 <Modal.Body>
                     <div className='text-center'>
-                        <HiOutlineExclamationCircle className='h-15 w-15 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
+                        <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
                         <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-300'>Are you sure you want to delete this user?</h3>
                         <div className='flex justify-center gap-5'>
                             <Button color='failure' onClick={handleDeleteUser}>
