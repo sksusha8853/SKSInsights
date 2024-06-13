@@ -79,7 +79,7 @@ export default function CreatePost() {
             }
         }
         catch (error) {
-            setPublishError(error.message);
+            setPublishError('Something went wrong');
 
         }
 

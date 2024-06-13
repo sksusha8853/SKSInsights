@@ -56,7 +56,7 @@ export const getposts = async (req, res, next) => {
         );
 
         const lastMonthPostsCount = await Post.countDocuments({
-            createdAt: {$gte: oneMonthAgo},
+            createdAt: { $gte: oneMonthAgo },
         });
 
         res.status(200).json({
@@ -70,16 +70,45 @@ export const getposts = async (req, res, next) => {
     }
 }
 
-export const deletepost = async(req, res, next)=>{
-    if(!req.user.isAdmin || req.user.id !== req.params.userId){
+export const deletepost = async (req, res, next) => {
+    if (!req.user.isAdmin || req.user.id !== req.params.userId) {
         return next(errHandler(403, 'You are not allowed to delete this post'));
     }
-    try{
+    try {
         await Post.findByIdAndDelete(req.params.postId);
         res.status(200).json('Post has been deleted successfully!');
 
     }
-    catch(error){
+    catch (error) {
         next(error);
     }
 }
+
+export const updatepost = async (req, res, next) => {
+    if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+        return next(errHandler(403, 'You are not allowed to edit this post'));
+    }
+
+    try {
+        const updatedPost = await Post.findByIdAndUpdate(
+            req.params.postId,
+            {
+                $set: {
+                    title: req.body.title,
+                    content: req.body.content,
+                    category: req.body.category,
+                    image: req.body.image,
+                },
+            },
+            { new: true }
+        );
+
+        if (!updatedPost) {
+            return next(errHandler(404, 'Post not found'));
+        }
+
+        res.status(200).json(updatedPost);
+    } catch (error) {
+        next(error);
+    }
+};
