@@ -6,24 +6,36 @@ import { Link } from 'react-router-dom';
 export default function DashboardPosts() {
     const { currentUser } = useSelector(state => state.user);
     const [userPosts, setUserPosts] = useState([]);
+    const [loading, setLoading] = useState(true); // State to manage loading state
 
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const res = await fetch(`/api/post/getposts?userId=${currentUser._id}`);
-                const data = await res.json();
-                if (res.ok) {
-                    setUserPosts(data.posts);
+                if (currentUser && currentUser.isAdmin) {
+                    const res = await fetch(`/api/post/getposts?userId=${currentUser._id}`);
+                    const data = await res.json();
+                    if (res.ok) {
+                        setUserPosts(data.posts);
+                    } else {
+                        console.log(data.message);
+                    }
                 }
             } catch (error) {
-                console.log(error.message);
+                console.log('Error fetching posts:', error.message);
+            } finally {
+                setLoading(false); // Set loading to false regardless of success or failure
             }
         };
 
-        if (currentUser.isAdmin) {
+        if (currentUser && currentUser.isAdmin) {
             fetchPosts();
         }
     }, [currentUser]);
+
+    // Loading state while fetching posts
+    if (loading) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
