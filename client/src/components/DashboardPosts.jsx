@@ -6,7 +6,8 @@ import { Link } from 'react-router-dom';
 export default function DashboardPosts() {
     const { currentUser } = useSelector(state => state.user);
     const [userPosts, setUserPosts] = useState([]);
-    const [loading, setLoading] = useState(true); // State to manage loading state
+    const [loading, setLoading] = useState(true);
+    const [showMore, setShowMore] = useState(true);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -16,6 +17,9 @@ export default function DashboardPosts() {
                     const data = await res.json();
                     if (res.ok) {
                         setUserPosts(data.posts);
+                        if (data.posts.length < 9) {
+                            setShowMore(false);
+                        }
                     } else {
                         console.log(data.message);
                     }
@@ -35,6 +39,26 @@ export default function DashboardPosts() {
     // Loading state while fetching posts
     if (loading) {
         return <p>Loading...</p>;
+    }
+
+    const handleShowMore = async () => {
+        const startIndex = userPosts.length;
+        try {
+            const res = await fetch(`/api/post/getposts?userId=${currentUser._id}&startIndex=${startIndex}`);
+
+            const data = await res.json();
+            if (res.ok) {
+                setUserPosts((prev) => [...prev, ...data.posts]);
+                if (data.posts.length < 9) {
+                    setShowMore(false);
+
+                }
+            }
+
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
 
     return (
@@ -92,6 +116,13 @@ export default function DashboardPosts() {
                             </Table.Body>
                         ))}
                     </Table>
+                    {
+                        showMore && (
+                            <button onClick={handleShowMore} className='w-full self-center text-teal-500 text-sm py-6'>
+                                Show more...
+                            </button>
+                        )
+                    }
                 </>
             ) : (
                 <p>You have no posts yet!</p>
