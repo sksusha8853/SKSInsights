@@ -1,6 +1,7 @@
 import { Button, Spinner } from 'flowbite-react';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import CommentSection from '../components/CommentSection';
 
 export default function ViewPost() {
     const { postSlug } = useParams();
@@ -80,6 +81,7 @@ export default function ViewPost() {
                 className='py-8 w-full post-content'
                 dangerouslySetInnerHTML={{ __html: post && post.content }}
             ></div>
+            <CommentSection postId={post._id}/>
         </main>
     );
 }
