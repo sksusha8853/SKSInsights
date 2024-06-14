@@ -78,7 +78,7 @@ export default function ViewPost() {
             </div>
 
             <div
-                className='py-8 w-full post-content'
+                className='py-8 w-full post-content border-b border-slate-500 '
                 dangerouslySetInnerHTML={{ __html: post && post.content }}
             ></div>
             <CommentSection postId={post._id}/>
