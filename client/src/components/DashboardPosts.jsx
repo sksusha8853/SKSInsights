@@ -104,7 +104,7 @@ export default function DashboardPosts() {
                         </Table.Head>
                         {userPosts.map((post) => (
                             <Table.Body className='divide-y'>
-                                <Table.Row>
+                                <Table.Row key={post._id}>
                                     <Table.Cell>
                                         {new Date(post.updatedAt).toLocaleDateString()}
                                     </Table.Cell>

@@ -82,7 +82,7 @@ export default function DashboardSidebar() {
                 active={tab === 'posts'}
                 icon={HiDocumentText}
                 as='div'>
-                Posts
+                Blogs
               </Sidebar.Item>
             </Link>)}
 
