@@ -101,35 +101,29 @@ export default function Search() {
     };
 
     return (
-        <div className='flex flex-col md:flex-row'>
-            <div className='p-7 border-b md:border-r md:min-h-screen border-gray-500'>
-                <form className='flex flex-col gap-8' onSubmit={handleSubmit}>
-                    <div className='flex   items-center gap-2'>
-                        <label className='whitespace-nowrap font-semibold'>
-                            Search Term:
-                        </label>
+        <div>
+            <div className='w-full border-2 rounded-lg md:border-r p-2 border-teal-500'>
+                <form className='flex flex-wrap gap-4' onSubmit={handleSubmit}>
+                    <div className='flex items-center gap-2 flex-1 min-w-[200px]'>
                         <TextInput
                             placeholder='Search...'
                             id='searchTerm'
                             type='text'
                             value={sidebarData.searchTerm}
                             onChange={handleChange}
+                            className='flex-1'
                         />
                     </div>
-                    <div className='flex items-center gap-2'>
+                    <div className='flex items-center gap-2 flex-1 min-w-[150px]'>
                         <label className='font-semibold'>Sort:</label>
-                        <Select onChange={handleChange} value={sidebarData.sort} id='sort'>
+                        <Select onChange={handleChange} value={sidebarData.sort} id='sort' className='flex-1'>
                             <option value='desc'>Latest</option>
                             <option value='asc'>Oldest</option>
                         </Select>
                     </div>
-                    <div className='flex items-center gap-2'>
+                    <div className='flex items-center gap-2 flex-1 min-w-[200px]'>
                         <label className='font-semibold'>Category:</label>
-                        <Select
-                            onChange={handleChange}
-                            value={sidebarData.category}
-                            id='category'
-                        >
+                        <Select onChange={handleChange} value={sidebarData.category} id='category' className='flex-1'>
                             <option value="uncategorized">Select a category</option>
                             <option value="competitiveprogramming">Competitive Programming</option>
                             <option value="dsa">DSA (Data Structures and Algorithms)</option>
@@ -146,16 +140,14 @@ export default function Search() {
                             <option value="traveling">Traveling</option>
                         </Select>
                     </div>
-                    <Button type='submit' outline gradientDuoTone='purpleToBlue'>
-                        Apply Filters
+                    <Button type='submit' outline gradientDuoTone='purpleToBlue' className='flex-none'>
+                        Apply
                     </Button>
                 </form>
             </div>
-            <div className='w-full'>
-                <h1 className='text-3xl font-semibold sm:border-b border-gray-500 p-3 mt-5 '>
-                    Posts results:
-                </h1>
-                <div className='p-7 flex flex-wrap gap-4'>
+
+            <div className='w-full '>
+                <div className='w-full flex justify-center p-7 flex flex-wrap gap-4'>
                     {!loading && posts.length === 0 && (
                         <p className='text-xl text-gray-500'>No posts found.</p>
                     )}
@@ -173,6 +165,7 @@ export default function Search() {
                     )}
                 </div>
             </div>
+
         </div>
     );
 }

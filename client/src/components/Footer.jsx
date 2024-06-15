@@ -1,7 +1,7 @@
 import { Footer } from 'flowbite-react';
 import { Link } from 'react-router-dom';
 import { BsFacebook, BsInstagram, BsTwitter, BsGithub, BsDribbble, BsLinkedin } from 'react-icons/bs';
-export default function FooterCom() {
+export default function FooterComponent() {
     return (
         <Footer container className='border border-t-8 border-blue-500'>
             <div className='w-full max-w-7xl mx-auto'>
@@ -24,13 +24,13 @@ export default function FooterCom() {
                                 >
                                     Portfolio
                                 </Footer.Link>
-                                <Footer.Link
+                                {/* <Footer.Link
                                     href='/about'
                                     target='_blank'
                                     rel='noopener noreferrer'
                                 >
                                     SKSInsights
-                                </Footer.Link>
+                                </Footer.Link> */}
                             </Footer.LinkGroup>
                         </div>
                         <div>
@@ -68,10 +68,11 @@ export default function FooterCom() {
                         <Footer.Icon href='https://www.linkedin.com/in/sksusha/' icon={BsLinkedin} target='_blank' />
                         <Footer.Icon href='https://www.facebook.com/sksusha8853' icon={BsFacebook} target='_blank' />
                         <Footer.Icon href='https://www.instagram.com/sksusha8853/' icon={BsInstagram} target='_blank' />
-                        <Footer.Icon href='https://github.com/sksusha8853' icon={BsGithub} target='_blank'/>
+                        <Footer.Icon href='https://github.com/sksusha8853' icon={BsGithub} target='_blank' />
                     </div>
                 </div>
             </div>
         </Footer>
+
     );
 }

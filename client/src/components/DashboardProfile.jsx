@@ -228,19 +228,6 @@ export default function DashboardProfile() {
                 <Button type='submit' gradientDuoTone='purpleToBlue' disabled={loading || imageFileUploading}>
                     {loading ? 'Loading...' : 'Update'}
                 </Button>
-
-                {
-                    currentUser.isAdmin && (
-                        <Link to={'/create-post'}>
-                            <Button
-                                type='button'
-                                gradientDuoTone='cyanToBlue'
-                                className='w-full'>
-                                Start a post
-                            </Button>
-                        </Link>
-                    )
-                }
             </form>
             <div className='text-red-500 flex justify-between mt-5'>
                 <span onClick={() => setShowModal(true)} className='cursor-pointer'>Delete Account</span>

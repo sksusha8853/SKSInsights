@@ -6,7 +6,7 @@ import 'react-quill/dist/quill.snow.css';
 import { app } from '../firebase';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function CreatePost() {
     const [file, setFile] = useState(null);
@@ -89,7 +89,7 @@ export default function CreatePost() {
     return (
         <div className='p-3 max-w-3xl mx-auto min-h-screen'>
             <h1 className='text-center text-3xl my-7 font-semibold'>
-                Create a post
+                Write a blog
             </h1>
             <form className='flex flex-col gap-5' onSubmit={handleSubmit}>
                 <div className='flex flex-col gap-5'>

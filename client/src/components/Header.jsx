@@ -60,17 +60,14 @@ export default function Header() {
                     type="text"
                     placeholder="Search.."
                     icon={AiOutlineSearch}
-                    className="hidden lg:inline"
-                    
+                    className=" lg:inline"
+
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </form>
-            <Button className="w-12 h-10 lg:hidden" color="gray" pill>
-                <AiOutlineSearch />
-            </Button>
             <div className="flex gap-2 md:order-2">
-                <Button className="w-12 h-10 hidden sm:inline" color="black" pill onClick={() => dispatch(toggleTheme())}>
+                <Button className="w-12 h-10 " color="black" pill onClick={() => dispatch(toggleTheme())}>
                     {theme === 'light' ? <FaSun /> : <FaMoon />}
                 </Button>
                 {currentUser ? (
@@ -88,10 +85,31 @@ export default function Header() {
                         <Dropdown.Header>
                             <span className="block text-sm">@{currentUser.username}</span>
                         </Dropdown.Header>
-                        <Link to={'/dashboard?tab=profile'}>
-                            <Dropdown.Item>Profile</Dropdown.Item>
-                        </Link>
+
+                        {
+                            currentUser.isAdmin ? (
+                                <Link to={'/dashboard?tab=dashboard'}>
+                                    <Dropdown.Item>Dashboard</Dropdown.Item>
+                                </Link>
+                            ) :
+                                (<Link to={'/dashboard?tab=profile'}>
+                                    <Dropdown.Item>Profile</Dropdown.Item>
+                                </Link>)
+                        }
                         <Dropdown.Divider />
+
+                        {
+                            currentUser.isAdmin && (
+                                <>
+                                    <Link to={'/create-post'}>
+                                        <Dropdown.Item>Write Blog</Dropdown.Item>
+                                    </Link>
+                                    <Dropdown.Divider />
+                                </>
+                            )
+                        }
+
+
                         <Dropdown.Item onClick={handleSignOut}>Sign Out</Dropdown.Item>
                     </Dropdown>
                 ) : (
@@ -101,7 +119,7 @@ export default function Header() {
                         </Button>
                     </Link>
                 )}
-                <Navbar.Toggle />
+
             </div>
         </Navbar>
     );

@@ -6,6 +6,7 @@ import { signOutSuccess } from '../redux/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaComment } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
+import { FaPen } from 'react-icons/fa';
 
 export default function DashboardSidebar() {
   const location = useLocation();
@@ -43,13 +44,22 @@ export default function DashboardSidebar() {
     <Sidebar className='w-full md:w-56'>
       <Sidebar.Items>
         <Sidebar.ItemGroup className='flex flex-col gap-1'>
-        {currentUser.isAdmin && (
+          {currentUser.isAdmin && (
             <Link to='/dashboard?tab=dashboard'>
               <Sidebar.Item
                 active={tab === 'dashboard' || !tab}
                 icon={MdDashboard}
                 as='div'>
                 Dashboard
+              </Sidebar.Item>
+            </Link>)}
+          {currentUser.isAdmin && (
+            <Link to='/create-post'>
+              <Sidebar.Item
+                active={tab === 'create-post'}
+                icon={FaPen}
+                as='div'>
+                Write Blog
               </Sidebar.Item>
             </Link>)}
           <Link to='/dashboard?tab=profile'>
@@ -75,8 +85,8 @@ export default function DashboardSidebar() {
                 Posts
               </Sidebar.Item>
             </Link>)}
-            
-            {currentUser.isAdmin && (
+
+          {currentUser.isAdmin && (
             <Link to='/dashboard?tab=comments'>
               <Sidebar.Item
                 active={tab === 'comments'}
