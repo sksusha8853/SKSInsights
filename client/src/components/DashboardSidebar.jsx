@@ -1,10 +1,11 @@
 import { Sidebar } from 'flowbite-react';
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { HiArrowSmRight, HiDocument, HiDocumentText, HiUser, HiUserCircle, HiUserGroup } from 'react-icons/hi';
+import { HiArrowSmRight, HiChartPie, HiDocument, HiDocumentText, HiUser, HiUserCircle, HiUserGroup } from 'react-icons/hi';
 import { signOutSuccess } from '../redux/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaComment } from 'react-icons/fa';
+import { MdDashboard } from 'react-icons/md';
 
 export default function DashboardSidebar() {
   const location = useLocation();
@@ -42,6 +43,15 @@ export default function DashboardSidebar() {
     <Sidebar className='w-full md:w-56'>
       <Sidebar.Items>
         <Sidebar.ItemGroup className='flex flex-col gap-1'>
+        {currentUser.isAdmin && (
+            <Link to='/dashboard?tab=dashboard'>
+              <Sidebar.Item
+                active={tab === 'dashboard' || !tab}
+                icon={MdDashboard}
+                as='div'>
+                Dashboard
+              </Sidebar.Item>
+            </Link>)}
           <Link to='/dashboard?tab=profile'>
             <Sidebar.Item active={tab === 'profile'} icon={HiUserCircle} label={currentUser.isAdmin ? 'Admin' : "User"} labelColor='dark' as="div">
               Profile
