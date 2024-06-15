@@ -114,3 +114,51 @@ export const deleteComment = async(req, res, next)=>{
         next(error);
     }
 }
+
+
+export const getComments = async (req, res, next) => {
+    try {
+      // Check if the user exists and if the user is an admin
+      if (!req.user || !req.user.isAdmin) {
+        return next(errHandler(403, 'You are not allowed to get all comments.'));
+      }
+  
+      // Parse query parameters
+      const startIndex = parseInt(req.query.startIndex, 10) || 0;
+      const limit = parseInt(req.query.limit, 10) || 9;
+      const sortDirection = req.query.sort === 'desc' ? -1 : 1;
+  
+      // Fetch comments with sorting, pagination, and limit
+      const comments = await Comment.find()
+        .sort({ createdAt: sortDirection })
+        .skip(startIndex)
+        .limit(limit);
+  
+      // Fetch total comments count
+      const totalComments = await Comment.countDocuments();
+  
+      // Calculate date one month ago
+      const now = new Date();
+      const oneMonthAgo = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        now.getDate()
+      );
+  
+      // Fetch count of comments created in the last month
+      const lastMonthCommentsCount = await Comment.countDocuments({
+        createdAt: { $gte: oneMonthAgo },
+      });
+  
+      // Respond with the data
+      res.status(200).json({
+        comments,
+        totalComments,
+        lastMonthCommentsCount,
+      });
+  
+    } catch (error) {
+      // Pass error to the next middleware
+      next(error);
+    }
+  };

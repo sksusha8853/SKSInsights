@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { HiArrowSmRight, HiDocument, HiDocumentText, HiUser, HiUserCircle, HiUserGroup } from 'react-icons/hi';
 import { signOutSuccess } from '../redux/user/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { FaComment } from 'react-icons/fa';
 
 export default function DashboardSidebar() {
   const location = useLocation();
@@ -47,6 +48,15 @@ export default function DashboardSidebar() {
             </Sidebar.Item>
           </Link>
           {currentUser.isAdmin && (
+            <Link to='/dashboard?tab=users'>
+              <Sidebar.Item
+                active={tab === 'users'}
+                icon={HiUserGroup}
+                as='div'>
+                Users
+              </Sidebar.Item>
+            </Link>)}
+          {currentUser.isAdmin && (
             <Link to='/dashboard?tab=posts'>
               <Sidebar.Item
                 active={tab === 'posts'}
@@ -55,13 +65,14 @@ export default function DashboardSidebar() {
                 Posts
               </Sidebar.Item>
             </Link>)}
+            
             {currentUser.isAdmin && (
-            <Link to='/dashboard?tab=users'>
+            <Link to='/dashboard?tab=comments'>
               <Sidebar.Item
-                active={tab === 'users'}
-                icon={HiUserGroup}
+                active={tab === 'comments'}
+                icon={FaComment}
                 as='div'>
-                Users
+                Comments
               </Sidebar.Item>
             </Link>)}
           <Sidebar.Item icon={HiArrowSmRight} className='cursor-pointer' onClick={handleSignOut}>
