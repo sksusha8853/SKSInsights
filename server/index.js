@@ -7,7 +7,6 @@ import cookieParser from 'cookie-parser';
 import postRoutes from './routes/post.route.js';
 import commentRoute from './routes/comment.route.js';
 import path from 'path';
-import cors from 'cors';
 
 dotenv.config();
 
@@ -18,7 +17,7 @@ const __dirname = path.resolve();
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors()); // Add CORS middleware if needed
+
 
 // Routes
 app.use('/api/user', userRoutes);
