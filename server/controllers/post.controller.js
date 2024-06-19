@@ -33,7 +33,7 @@ export const getposts = async (req, res, next) => {
 
         // Adjusting the category filter
         let categoryFilter = {};
-        if (req.query.category && req.query.category !== 'uncategorized') {
+        if (req.query.category && req.query.category !== 'uncategorized' && req.query.category !== 'null') {
             categoryFilter = { category: req.query.category };
         }
 
