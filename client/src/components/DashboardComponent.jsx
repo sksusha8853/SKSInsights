@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { FaComment, FaRegNewspaper } from 'react-icons/fa';
+import { FaComment } from 'react-icons/fa';
 import {
-    HiAnnotation,
     HiArrowNarrowUp,
-    HiDocumentText,
     HiOutlineUserGroup,
 } from 'react-icons/hi';
 import { Button, Table } from 'flowbite-react';
 import { Link } from 'react-router-dom';
-import { MdArticle } from 'react-icons/md';
 import { IoNewspaperOutline } from 'react-icons/io5';
 
 
@@ -34,45 +31,49 @@ export default function DashboardComponent() {
                     setUsers(data.users);
                     setTotalUsers(data.totalUsers);
                     setLastMonthUsers(data.lastMonthUsersCount);
-                    
                 }
             } catch (error) {
-                console.log(error.message);
+                console.log('Error fetching data:', error.message);
             }
         };
+
         const fetchPosts = async () => {
             try {
                 const res = await fetch('/api/post/getposts?limit=7');
                 const data = await res.json();
+
                 if (res.ok) {
                     setPosts(data.posts);
                     setTotalPosts(data.totalPosts);
                     setLastMonthPosts(data.lastMonthPostsCount);
                 }
             } catch (error) {
-                console.log(error.message);
+                console.log('Error fetching data:', error.message);
             }
         };
+
         const fetchComments = async () => {
             try {
                 const res = await fetch('/api/comment/getcomments?limit=7');
                 const data = await res.json();
+
                 if (res.ok) {
                     setComments(data.comments);
                     setTotalComments(data.totalComments);
                     setLastMonthComments(data.lastMonthCommentsCount);
                 }
             } catch (error) {
-                console.log(error.message);
+                console.log('Error fetching data:', error.message);
             }
         };
+
         if (currentUser.isAdmin) {
             fetchUsers();
             fetchPosts();
             fetchComments();
         }
     }, [currentUser]);
-    
+
 
     return (
         <div className='p-3 md:mx-auto'>

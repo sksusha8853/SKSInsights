@@ -13,6 +13,7 @@ export default function DashboardSidebar() {
   const [tab, setTab] = useState('');
   const { currentUser } = useSelector(state => state.user);
   const dispatch = useDispatch();
+
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tabFromURL = urlParams.get('tab');
@@ -22,28 +23,27 @@ export default function DashboardSidebar() {
   }, [location.search]);
 
   const handleSignOut = async () => {
-
     try {
-      const res = await fetch('/api/user/signout', {
+      const response = await fetch('/api/user/signout', {
         method: 'POST',
       });
-      const data = await res.json();
-      if (!res.ok) {
-        console.log(data.message);
-      }
-      else {
-        dispatch(signOutSuccess());
-      }
-    }
-    catch (err) {
-      console.log(err.message);
-    }
 
+      if (response.ok) {
+        dispatch(signOutSuccess());
+      } else {
+        const data = await response.json();
+        console.error('Failed to sign out:', data.message);
+      }
+    } catch (error) {
+      console.error('Error signing out:', error.message);
+    }
   };
+
   return (
     <Sidebar className='w-full md:w-56'>
       <Sidebar.Items>
         <Sidebar.ItemGroup className='flex flex-col gap-1'>
+
           {currentUser.isAdmin && (
             <Link to='/dashboard?tab=dashboard'>
               <Sidebar.Item
@@ -53,6 +53,7 @@ export default function DashboardSidebar() {
                 Dashboard
               </Sidebar.Item>
             </Link>)}
+
           {currentUser.isAdmin && (
             <Link to='/create-post'>
               <Sidebar.Item
@@ -62,11 +63,13 @@ export default function DashboardSidebar() {
                 Write Blog
               </Sidebar.Item>
             </Link>)}
+
           <Link to='/dashboard?tab=profile'>
             <Sidebar.Item active={tab === 'profile'} icon={HiUserCircle} label={currentUser.isAdmin ? 'Admin' : "User"} labelColor='dark' as="div">
               Profile
             </Sidebar.Item>
           </Link>
+
           {currentUser.isAdmin && (
             <Link to='/dashboard?tab=users'>
               <Sidebar.Item
@@ -76,6 +79,7 @@ export default function DashboardSidebar() {
                 Users
               </Sidebar.Item>
             </Link>)}
+
           {currentUser.isAdmin && (
             <Link to='/dashboard?tab=posts'>
               <Sidebar.Item
@@ -95,12 +99,12 @@ export default function DashboardSidebar() {
                 Comments
               </Sidebar.Item>
             </Link>)}
+
           <Sidebar.Item icon={HiArrowSmRight} className='cursor-pointer' onClick={handleSignOut}>
             Sign Out
           </Sidebar.Item>
         </Sidebar.ItemGroup>
       </Sidebar.Items>
-
     </Sidebar>
   )
 }

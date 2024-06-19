@@ -16,18 +16,20 @@ export default function CreatePost() {
     const [publishError, setPublishError] = useState(null);
     const navigate = useNavigate();
 
-
     const handleUploadImage = async () => {
+        if (!file) {
+            setImageFileUploadError('Please select an image.');
+            return;
+        }
+
         try {
-            if (!file) {
-                setImageFileUploadError('Please select an image.');
-                return;
-            }
             setImageFileUploadError(null);
+            setImageFileUploadProgress(0);
+
             const storage = getStorage(app);
-            const fileName = new Date().getTime() + file.name; // Changed from `imageFile.name` to `file.name`
+            const fileName = `${new Date().getTime()}_${file.name}`;
             const storageRef = ref(storage, fileName);
-            const uploadTask = uploadBytesResumable(storageRef, file); // Changed from `imageFile` to `file`
+            const uploadTask = uploadBytesResumable(storageRef, file);
 
             uploadTask.on(
                 'state_changed',
@@ -36,19 +38,30 @@ export default function CreatePost() {
                     setImageFileUploadProgress(progress.toFixed(0));
                 },
                 (error) => {
-                    setImageFileUploadError('File must be an image and less than 2MB.');
+                    let errorMessage = 'Image upload failed.';
+                    if (error.code === 'storage/unauthorized') {
+                        errorMessage = 'You do not have permission to upload files.';
+                    } else if (error.code === 'storage/canceled') {
+                        errorMessage = 'Upload canceled.';
+                    } else if (error.code === 'storage/unknown') {
+                        errorMessage = 'Unknown error occurred.';
+                    }
+                    setImageFileUploadError(errorMessage);
                     setImageFileUploadProgress(null);
                 },
-                () => {
-                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                async () => {
+                    try {
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
                         setImageFileUploadError(null);
                         setImageFileUploadProgress(null);
                         setFormData({ ...formData, image: downloadURL });
-                    });
+                    } catch (error) {
+                        setImageFileUploadError('Failed to get download URL.');
+                        setImageFileUploadProgress(null);
+                    }
                 }
             );
-        }
-        catch (error) {
+        } catch (error) {
             setImageFileUploadError('Image upload failed.');
             setImageFileUploadProgress(null);
         }
@@ -64,27 +77,31 @@ export default function CreatePost() {
                 },
                 body: JSON.stringify(formData),
             });
-            const text = await res.text(); // Get the response as text first
-            const data = text ? JSON.parse(text) : {}; // Safely parse the text to JSON
 
-            if (!res.ok) {
-                setPublishError(data.message);
+            // Check if the response is empty
+            if (res.status === 204) {
+                setPublishError('No content returned from the server.');
                 return;
             }
-            else {
+
+            // Get the response as text first
+            const text = await res.text();
+
+            // Safely parse the text to JSON
+            const data = text ? JSON.parse(text) : {};
+
+            if (!res.ok) {
+                setPublishError(data.message || 'Failed to create post.');
+            } else {
                 setPublishError(null);
                 navigate(`/post/${data.slug}`);
-
-
             }
-        }
-        catch (error) {
+        } catch (error) {
             setPublishError('Something went wrong');
-
+            console.error('Error submitting post:', error);
         }
+    };
 
-
-    }
 
     return (
         <div className='p-3 max-w-3xl mx-auto min-h-screen'>

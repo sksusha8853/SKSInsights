@@ -1,4 +1,4 @@
-import { Button, Table } from 'flowbite-react';
+import { Button, Table, Spinner } from 'flowbite-react';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -15,25 +15,25 @@ export default function DashboardPosts() {
 
     const handleDeletePost = async () => {
         setShowModal(false);
+
         try {
-            const res = await fetch(`/api/post/deletepost/${postIdToDelete}/${currentUser._id}`,
-                {
-                    method: 'DELETE',
-                }
-            );
-            const data = await res.json();
-            if (!res.ok) {
-                console.log(data.message);
+            const res = await fetch(`/api/post/deletepost/${postIdToDelete}/${currentUser._id}`, {
+                method: 'DELETE',
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                setUserPosts((prevUserPosts) =>
+                    prevUserPosts.filter((post) => post._id !== postIdToDelete)
+                );
+            } else {
+                const data = await res.json();
+                console.error('Failed to delete post:', data.message);
             }
-            else {
-                setUserPosts((prev) =>
-                    prev.filter((post) => post._id !== postIdToDelete));
-            }
+        } catch (error) {
+            console.error('Error deleting post:', error.message);
         }
-        catch (error) {
-            console.log(error.message);
-        }
-    }
+    };
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -53,7 +53,7 @@ export default function DashboardPosts() {
             } catch (error) {
                 console.log('Error fetching posts:', error.message);
             } finally {
-                setLoading(false); // Set loading to false regardless of success or failure
+                setLoading(false);
             }
         };
 
@@ -62,30 +62,32 @@ export default function DashboardPosts() {
         }
     }, [currentUser]);
 
-    // Loading state while fetching posts
-    if (loading) {
-        return <p>Loading...</p>;
-    }
-
     const handleShowMore = async () => {
         const startIndex = userPosts.length;
+
         try {
             const res = await fetch(`/api/post/getposts?userId=${currentUser._id}&startIndex=${startIndex}`);
 
-            const data = await res.json();
             if (res.ok) {
-                setUserPosts((prev) => [...prev, ...data.posts]);
+                const data = await res.json();
+                setUserPosts((prevUserPosts) => [...prevUserPosts, ...data.posts]);
+
                 if (data.posts.length < 9) {
                     setShowMore(false);
-
                 }
+            } else {
+                const data = await res.json();
+                console.error('Failed to fetch more posts:', data.message);
             }
+        } catch (error) {
+            console.error('Error fetching more posts:', error.message);
+        }
+    };
 
-        }
-        catch (error) {
-            console.log(error);
-        }
+    if (loading) {
+        return <div className='flex justify-center mt-5'><Spinner size='lg' /></div>;
     }
+
 
     return (
         <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
@@ -116,7 +118,6 @@ export default function DashboardPosts() {
                                                 className='w-20 h-10 object-cover bg-gray-500'
                                             />
                                         </Link>
-
                                     </Table.Cell>
                                     <Table.Cell>
                                         <Link className='fort-medium text-gray-900 dark:text-white' to={`/post/${post.slug}`}>{post.title}
@@ -140,7 +141,6 @@ export default function DashboardPosts() {
                                             </span>
                                         </Link>
                                     </Table.Cell>
-
                                 </Table.Row>
                             </Table.Body>
                         ))}

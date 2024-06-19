@@ -42,10 +42,7 @@ export const getposts = async (req, res, next) => {
                     { content: { $regex: req.query.searchTerm, $options: 'i' } },
                 ],
             }),
-
-
         }).sort({ updatedAt: sortDirection }).skip(startIndex).limit(limit);
-
 
         const totalPosts = await Post.countDocuments();
         const now = new Date();
@@ -77,7 +74,6 @@ export const deletepost = async (req, res, next) => {
     try {
         await Post.findByIdAndDelete(req.params.postId);
         res.status(200).json('Post has been deleted successfully!');
-
     }
     catch (error) {
         next(error);
@@ -85,6 +81,7 @@ export const deletepost = async (req, res, next) => {
 }
 
 export const updatepost = async (req, res, next) => {
+
     if (!req.user.isAdmin || req.user.id !== req.params.userId) {
         return next(errHandler(403, 'You are not allowed to edit this post'));
     }

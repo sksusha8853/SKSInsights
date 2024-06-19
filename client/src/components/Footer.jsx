@@ -13,7 +13,6 @@ export default function FooterComponent() {
                         </Link>
                     </div>
                     <div className='grid grid-cols-2 gap-8 mt-4 sm:grid-cols-3 sm:gap-6'>
-
                         <div>
                             <Footer.Title title='About' />
                             <Footer.LinkGroup col>
@@ -24,13 +23,6 @@ export default function FooterComponent() {
                                 >
                                     Portfolio
                                 </Footer.Link>
-                                {/* <Footer.Link
-                                    href='/about'
-                                    target='_blank'
-                                    rel='noopener noreferrer'
-                                >
-                                    SKSInsights
-                                </Footer.Link> */}
                             </Footer.LinkGroup>
                         </div>
                         <div>
@@ -73,6 +65,5 @@ export default function FooterComponent() {
                 </div>
             </div>
         </Footer>
-
     );
 }

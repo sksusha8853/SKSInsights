@@ -60,8 +60,7 @@ export default function Header() {
                     type="text"
                     placeholder="Search.."
                     icon={AiOutlineSearch}
-                    className=" lg:inline"
-
+                    className="lg:inline"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />

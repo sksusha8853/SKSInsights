@@ -14,13 +14,17 @@ export default function CommentSection({ postId }) {
   const [showModal, setShowModal] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState(null);
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (comment.length > 200) {
+      setCommentError('Comment is too long. Maximum length is 200 characters.');
       return;
     }
+
     try {
-      const res = await fetch('/api/comment/create', {
+      const response = await fetch('/api/comment/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,30 +35,37 @@ export default function CommentSection({ postId }) {
           userId: currentUser._id,
         }),
       });
-      const data = await res.json();
-      if (res.ok) {
+
+      const data = await response.json();
+
+      if (response.ok) {
         setComment('');
         setCommentError(null);
         setComments([data, ...comments]);
+      } else {
+        setCommentError(data.message || 'Failed to create comment.');
       }
     } catch (error) {
-      setCommentError(error.message);
+      setCommentError('Error: ' + error.message);
     }
   };
 
+
   useEffect(() => {
-    const getComments = async () => {
+    const fetchComments = async () => {
       try {
-        const res = await fetch(`/api/comment/getPostComments/${postId}`);
-        if (res.ok) {
-          const data = await res.json();
+        const response = await fetch(`/api/comment/getPostComments/${postId}`);
+        if (response.ok) {
+          const data = await response.json();
           setComments(data);
+        } else {
+          console.error('Failed to fetch comments:', response.statusText);
         }
       } catch (error) {
-        console.log(error.message);
+        console.error('Error fetching comments:', error.message);
       }
     };
-    getComments();
+    fetchComments();
   }, [postId]);
 
   const handleApplaud = async (commentId) => {
@@ -63,25 +74,23 @@ export default function CommentSection({ postId }) {
         navigate('/sign-in');
         return;
       }
-      const res = await fetch(`/api/comment/applaudComment/${commentId}`, {
+      const response = await fetch(`/api/comment/applaudComment/${commentId}`, {
         method: 'PUT',
       });
-      if (res.ok) {
-        const data = await res.json();
-        setComments(
-          comments.map((comment) =>
+      if (response.ok) {
+        const data = await response.json();
+        setComments((prevComments) =>
+          prevComments.map((comment) =>
             comment._id === commentId
-              ? {
-                  ...comment,
-                  applauds: data.applauds,
-                  numberOfApplauds: data.applauds.length,
-                }
+              ? { ...comment, applauds: data.applauds, numberOfApplauds: data.applauds.length }
               : comment
           )
         );
+      } else {
+        console.error('Failed to applaud comment:', response.statusText);
       }
     } catch (error) {
-      console.log(error.message);
+      console.error('Error applauding comment:', error.message);
     }
   };
 
@@ -95,22 +104,29 @@ export default function CommentSection({ postId }) {
 
   const handleDelete = async (commentId) => {
     setShowModal(false);
+
+    if (!currentUser) {
+      navigate('/sign-in');
+      return;
+    }
+
     try {
-      if (!currentUser) {
-        navigate('/sign-in');
-        return;
-      }
-      const res = await fetch(`/api/comment/deleteComment/${commentId}`, {
+      const response = await fetch(`/api/comment/deleteComment/${commentId}`, {
         method: 'DELETE',
       });
-      if (res.ok) {
-        const data = await res.json();
-        setComments(comments.filter((comment) => comment._id !== commentId));
+
+      if (response.ok) {
+        setComments((prevComments) =>
+          prevComments.filter((comment) => comment._id !== commentId)
+        );
+      } else {
+        console.error('Failed to delete comment:', response.statusText);
       }
     } catch (error) {
-      console.log(error.message);
+      console.error('Error deleting comment:', error.message);
     }
   };
+
   return (
     <div className='max-w-2xl mx-auto w-full p-3'>
       {currentUser ? (
@@ -168,10 +184,8 @@ export default function CommentSection({ postId }) {
       ) : (
         <>
           <div className='text-l my-5 flex items-center gap-1'>
-            <p><FaComment/> </p>
-            {/* <div className='border border-gray-400 py-1 px-2 rounded-sm'> */}
-              <p>{comments.length}</p>
-            {/* </div> */}
+            <p><FaComment /> </p>
+            <p>{comments.length}</p>
           </div>
           {comments.map((comment) => (
             <Comment

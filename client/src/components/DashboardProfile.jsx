@@ -47,14 +47,17 @@ export default function DashboardProfile() {
         e.preventDefault();
         setUpdateUserError(null);
         setUpdateUserSuccess(null);
+
         if (Object.keys(formData).length === 0) {
             setUpdateUserError("No changes made.");
             return;
         }
+
         if (imageFileUploading) {
             setUpdateUserError("Please wait for image to upload.");
             return;
         }
+
         try {
             dispatch(updateStart());
             const res = await fetch(`/api/user/update/${currentUser._id}`, {
@@ -64,7 +67,9 @@ export default function DashboardProfile() {
                 },
                 body: JSON.stringify(formData),
             });
+
             const data = await res.json();
+
             if (!res.ok) {
                 dispatch(updateFailure(data.message));
                 setUpdateUserError(data.message);
@@ -85,45 +90,44 @@ export default function DashboardProfile() {
 
     const handleDeleteUser = async () => {
         setShowModal(false);
+
         try {
             dispatch(deleteUserStart());
+
             const res = await fetch(`/api/user/delete/${currentUser._id}`, {
                 method: 'DELETE',
             });
-            const data = await res.json();
-            if (!res.ok) {
-                dispatch(deleteUserFailure(data.message));
 
-            }
-            else {
+            if (res.ok) {
+                const data = await res.json();
                 dispatch(deleteUserSuccess(data));
-
+            } else {
+                const data = await res.json();
+                dispatch(deleteUserFailure(data.message));
             }
         } catch (error) {
             dispatch(deleteUserFailure(error.message));
-
         }
     };
 
-    const handleSignOut = async () => {
 
+    const handleSignOut = async () => {
         try {
             const res = await fetch('/api/user/signout', {
                 method: 'POST',
             });
-            const data = await res.json();
-            if (!res.ok) {
-                console.log(data.message);
-            }
-            else {
-                dispatch(signOutSuccess());
-            }
-        }
-        catch (err) {
-            console.log(err.message);
-        }
 
+            if (res.ok) {
+                dispatch(signOutSuccess());
+            } else {
+                const data = await res.json();
+                console.error('Failed to sign out:', data.message);
+            }
+        } catch (error) {
+            console.error('Error signing out:', error.message);
+        }
     };
+
 
     const filePickerRef = useRef();
 
@@ -136,6 +140,7 @@ export default function DashboardProfile() {
     const uploadImage = async () => {
         setImageFileUploading(true);
         setImageFileUploadError(null);
+
         const storage = getStorage(app);
         const fileName = new Date().getTime() + imageFile.name;
         const storageRef = ref(storage, fileName);
@@ -144,10 +149,12 @@ export default function DashboardProfile() {
         uploadTask.on(
             'state_changed',
             (snapshot) => {
+                // Progress handling
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 setImageFileUploadProgress(progress.toFixed(0));
             },
             (error) => {
+                // Error handling
                 setImageFileUploadError('File must be an image and less than 2MB.');
                 setImageFileUploadProgress(null);
                 setImageFileURL(null);
@@ -155,11 +162,18 @@ export default function DashboardProfile() {
                 setImageFileUploading(false);
             },
             () => {
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    setImageFileURL(downloadURL);
-                    setFormData({ ...formData, profilePicture: downloadURL });
-                    setImageFileUploading(false);
-                });
+                // Completion handling
+                getDownloadURL(uploadTask.snapshot.ref)
+                    .then((downloadURL) => {
+                        setImageFileURL(downloadURL);
+                        setFormData({ ...formData, profilePicture: downloadURL });
+                    })
+                    .catch((error) => {
+                        console.error('Error getting download URL:', error.message);
+                    })
+                    .finally(() => {
+                        setImageFileUploading(false);
+                    });
             }
         );
     };

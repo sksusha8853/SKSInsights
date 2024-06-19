@@ -1,4 +1,4 @@
-import { Button, Table } from 'flowbite-react';
+import { Button, Table, Spinner } from 'flowbite-react';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
@@ -15,73 +15,84 @@ export default function DashboardComments() {
 
     const handleDeleteComment = async () => {
         setShowModal(false);
+
         try {
-            const res = await fetch(`/api/comment/deleteComment/${commentIdToDelete}`, {
+            const response = await fetch(`/api/comment/deleteComment/${commentIdToDelete}`, {
                 method: 'DELETE',
             });
-            const data = await res.json();
-            if (!res.ok) {
-                console.log(data.message);
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                console.error('Failed to delete comment:', data.message);
+            } else {
+                setComments((prevComments) =>
+                    prevComments.filter((comment) => comment._id !== commentIdToDelete)
+                );
             }
-            else {
-                setComments((prev) =>
-                    prev.filter((comment) => comment._id !== commentIdToDelete));
-            }
-        }
-        catch (error) {
-            console.log(error.message);
+        } catch (error) {
+            console.error('Error deleting comment:', error.message);
         }
     };
 
     useEffect(() => {
         const fetchComments = async () => {
+            setLoading(true);
+
             try {
-                if (currentUser && currentUser.isAdmin) {
-                    const res = await fetch('/api/comment/getcomments');
-                    if (res.ok) {
-                        const data = await res.json();
+                if (currentUser?.isAdmin) {
+                    const response = await fetch('/api/comment/getcomments');
+
+                    if (response.ok) {
+                        const data = await response.json();
                         setComments(data.comments);
+
                         if (data.comments.length < 9) {
                             setShowMore(false);
                         }
                     } else {
-                        const data = await res.json();
-                        console.log(data.message);
+                        const data = await response.json();
+                        console.error('Failed to fetch comments:', data.message);
                     }
                 }
             } catch (error) {
-                console.log('Error fetching comments:', error.message);
+                console.error('Error fetching comments:', error.message);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (currentUser && currentUser.isAdmin) {
+        if (currentUser?.isAdmin) {
             fetchComments();
         }
     }, [currentUser]);
 
+
     const handleShowMore = async () => {
         const startIndex = comments.length;
+
         try {
-            const res = await fetch(`/api/comment/getComments?startIndex=${startIndex}`);
-            if (res.ok) {
-                const data = await res.json();
-                setComments(prevComments => [...prevComments, ...data.comments]);
+            const response = await fetch(`/api/comment/getComments?startIndex=${startIndex}`);
+
+            if (response.ok) {
+                const data = await response.json();
+                setComments((prevComments) => [...prevComments, ...data.comments]);
+
                 if (data.comments.length < 9) {
                     setShowMore(false);
                 }
             } else {
-                const data = await res.json();
-                console.log(data.message);
+                const data = await response.json();
+                console.error('Failed to fetch more comments:', data.message);
             }
         } catch (error) {
-            console.log('Error fetching more comments:', error.message);
+            console.error('Error fetching more comments:', error.message);
         }
     };
 
+
     if (loading) {
-        return <p>Loading...</p>;
+        return <div className='flex justify-center mt-5'><Spinner size='lg' /></div>;
     }
 
     return (

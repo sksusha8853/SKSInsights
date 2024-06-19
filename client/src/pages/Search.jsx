@@ -10,13 +10,10 @@ export default function Search() {
         category: 'uncategorized',
     });
 
-    console.log(sidebarData);
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [showMore, setShowMore] = useState(false);
-
     const location = useLocation();
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -56,18 +53,25 @@ export default function Search() {
     }, [location]);
 
     const handleChange = (e) => {
-        if (e.target.id === 'searchTerm') {
-            setSidebarData({ ...sidebarData, searchTerm: e.target.value });
+        const { id, value } = e.target;
+        const updatedData = { ...sidebarData };
+    
+        switch (id) {
+            case 'searchTerm':
+                updatedData.searchTerm = value;
+                break;
+            case 'sort':
+                updatedData.sort = value || 'desc';
+                break;
+            case 'category':
+                updatedData.category = value || 'uncategorized';
+                break;
+            default:
+                break;
         }
-        if (e.target.id === 'sort') {
-            const order = e.target.value || 'desc';
-            setSidebarData({ ...sidebarData, sort: order });
-        }
-        if (e.target.id === 'category') {
-            const category = e.target.value || 'uncategorized';
-            setSidebarData({ ...sidebarData, category });
-        }
-    };
+    
+        setSidebarData(updatedData);
+    };    
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -80,26 +84,28 @@ export default function Search() {
     };
 
     const handleShowMore = async () => {
-        const numberOfPosts = posts.length;
-        const startIndex = numberOfPosts;
-        const urlParams = new URLSearchParams(location.search);
-        urlParams.set('startIndex', startIndex);
-        const searchQuery = urlParams.toString();
-        const res = await fetch(`/api/post/getposts?${searchQuery}`);
-        if (!res.ok) {
-            return;
-        }
-        if (res.ok) {
-            const data = await res.json();
-            setPosts([...posts, ...data.posts]);
-            if (data.posts.length === 9) {
-                setShowMore(true);
-            } else {
-                setShowMore(false);
+        try {
+            const startIndex = posts.length;
+            const urlParams = new URLSearchParams(location.search);
+            urlParams.set('startIndex', startIndex);
+            const searchQuery = urlParams.toString();
+    
+            const res = await fetch(`/api/post/getposts?${searchQuery}`);
+    
+            if (!res.ok) {
+                console.error('Failed to fetch more posts');
+                return;
             }
+    
+            const data = await res.json();
+    
+            setPosts(prevPosts => [...prevPosts, ...data.posts]);
+            setShowMore(data.posts.length === 9);
+        } catch (error) {
+            console.error('Error fetching more posts:', error);
         }
     };
-
+    
     return (
         <div>
             <div className='w-full border-2 rounded-lg md:border-r p-2 border-teal-500'>

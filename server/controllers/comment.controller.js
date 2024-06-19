@@ -3,10 +3,10 @@ import Comment from "../models/comment.model.js"; // Ensure to import the Commen
 import User from "../models/user.model.js";
 
 export const createComment = async (req, res, next) => {
+
     try {
         const { content, postId, userId } = req.body;
 
-        // Ensure the userId in the request body matches the authenticated user's id
         if (userId !== req.user.id) {
             return next(errHandler(403, "You are not allowed to write your thoughts."));
         }
@@ -24,8 +24,8 @@ export const createComment = async (req, res, next) => {
     }
 }
 
-
 export const getPostComments = async (req, res, next) => {
+
     try {
         const comments = await Comment.find({ postId: req.params.postId }).sort({ createdAt: -1, });
         res.status(201).json(comments);
@@ -36,11 +36,14 @@ export const getPostComments = async (req, res, next) => {
 }
 
 export const getUser = async(req, res, next)=>{
+
     try{
         const user = await User.findById(req.params.userId);
+
         if(!user){
             return next(errHandler(404, 'User not found'));
         }
+
         const {password, ...rest} = user._doc;
         res.status(200).json(rest);
     }
@@ -50,21 +53,23 @@ export const getUser = async(req, res, next)=>{
 }
 
 export const applaudComment = async (req, res, next)=>{
+
     try{
         const comment = await Comment.findById(req.params.commentId);
+
         if(!comment){
             return next(errHandler(403, 'Comment not found'));
         }
+
         const userIndex = comment.applauds.indexOf(req.user.id);
+
         if(userIndex === -1){
             comment.numberOfApplauds +=1;
-            comment.applauds.push(req.user.id);
-            
+            comment.applauds.push(req.user.id);   
         }
         else{
             comment.numberOfApplauds -=1;
             comment.applauds.splice(userIndex, 1);
-
         }
         await comment.save();
         res.status(200).json(comment);
@@ -98,25 +103,27 @@ export const editComment  = async (req, res,next)=>{
 }
 
 export const deleteComment = async(req, res, next)=>{
+
     try{
         const comment = await Comment.findById(req.params.commentId);
+
         if(!comment){
             return next(errHandler(404, 'Comment not found.'));
         }
+
         if(comment.userId != req.user.id && !req.user.isAdmin){
             return next(errHandler(403, 'You are not allowed to edit this comment'));
         }
+
         await Comment.findByIdAndDelete(req.params.commentId);
         res.status(200).json("Comment has been deleted.");
-
-
     }catch(error){
         next(error);
     }
 }
 
-
 export const getComments = async (req, res, next) => {
+    
     try {
       // Check if the user exists and if the user is an admin
       if (!req.user || !req.user.isAdmin) {

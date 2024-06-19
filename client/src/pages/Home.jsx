@@ -2,19 +2,31 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import PostCard from '../components/PostCard';
+import { Spinner } from 'flowbite-react';
 
 export default function Home() {
-
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const res = await fetch('/api/post/getPosts');
-      const data = await res.json();
-      setPosts(data.posts);
+      try {
+        const res = await fetch('/api/post/getPosts');
+        if (!res.ok) {
+          throw new Error('Failed to fetch posts');
+        }
+        const data = await res.json();
+        setPosts(data.posts);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchPosts();
   }, []);
+
   return (
     <div className=''>
       <div className='flex flex-col gap-6 p-20 px-3 max-w-6xl mx-auto '>
@@ -23,8 +35,10 @@ export default function Home() {
           Dive into a world of engaging articles, insightful commentary, and comprehensive analysis on a wide range of topics. At SKS Insights, we believe in the power of knowledge and the beauty of shared wisdom. Whether you're here to stay updated on the latest trends, gain deeper understanding on various subjects, or simply indulge in some quality reading, we've got you covered.
         </p>
       </div>
-
       <div className='max-w p-3 flex flex-col gap-8 py-2 items-center'>
+        {
+          loading && <div className='flex justify-center mt-5'><Spinner size='lg' /></div>
+        }
         {posts && posts.length > 0 && (
           <div className='flex flex-col gap-6 items-center'>
             <h2 className='text-2xl font-semibold text-center'>Recent Blogs</h2>
@@ -43,6 +57,5 @@ export default function Home() {
         )}
       </div>
     </div>
-
   )
 }

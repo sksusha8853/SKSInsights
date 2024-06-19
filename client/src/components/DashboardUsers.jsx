@@ -1,4 +1,4 @@
-import { Button, Table } from 'flowbite-react';
+import { Button, Table, Spinner } from 'flowbite-react';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
@@ -15,23 +15,30 @@ export default function DashboardUsers() {
 
     const handleDeleteUser = async () => {
         setShowModal(false);
+
         try {
-            const res = await fetch(`/api/user/delete/${userIdToDelete}`,{
+            const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
                 method: 'DELETE',
             });
-            const data = await res.json();
-            if (!res.ok) {
-                console.log(data.message);
+
+            if (res.ok) {
+                // Successfully deleted user, update state
+                setUsers((prevUsers) =>
+                    prevUsers.filter((user) => user._id !== userIdToDelete)
+                );
+            } else {
+                // Handle server-side error
+                const data = await res.json();
+                console.error('Failed to delete user:', data.message);
+                // Optionally handle failure scenario
             }
-            else {
-                setUsers((prev) =>
-                    prev.filter((user) => user._id !== userIdToDelete));
-            }
-        }
-        catch (error) {
-            console.log(error.message);
+        } catch (error) {
+            // Handle network error
+            console.error('Error deleting user:', error.message);
+            // Optionally handle network error scenario
         }
     };
+
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -81,7 +88,7 @@ export default function DashboardUsers() {
     };
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <div className='flex justify-center mt-5'><Spinner size='lg' /></div>;
     }
 
     return (
