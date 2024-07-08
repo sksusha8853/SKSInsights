@@ -43,7 +43,7 @@ app.use((err, req, res, next) => {
 });
 
 // Database connection and server start
-mongoose.connect(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB)
     .then(() => {
         console.log('Database is connected');
         app.listen(PORT, () => {
