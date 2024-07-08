@@ -67,6 +67,34 @@ cd server
 npm run dev
 ```
 
+## Project pages
+**Home Page:**
+![Home](https://github.com/sksusha8853/SKSInsights/assets/77530794/5627b5c6-1936-4900-8640-0d5445214c5d)
+![Home](https://github.com/sksusha8853/SKSInsights/assets/77530794/1ef5c310-0701-4d84-85d7-6f1b1289117e)
 
+**Write a blog:**
+![](https://github.com/sksusha8853/SKSInsights/assets/77530794/3089e2f4-53c8-4a5b-9bb0-ac590abbbb37)
+
+**Edit a blog:**
+![](https://github.com/sksusha8853/SKSInsights/assets/77530794/d08d6040-0194-4068-9675-9ec28f71d373)
+![](https://github.com/sksusha8853/SKSInsights/assets/77530794/d42995a9-054f-40c3-ac89-3aab4ee109c6)
+
+**Profile page:**
+![profile](https://github.com/sksusha8853/SKSInsights/assets/77530794/b80d1433-fbaa-42ea-87c5-604ac94069dc)
+
+**Dashboard(Admin Only):**
+![dashboard](https://github.com/sksusha8853/SKSInsights/assets/77530794/362ee967-5cec-4207-a906-3834bd155911)
+
+**Blog Page:**
+![blog](https://github.com/sksusha8853/SKSInsights/assets/77530794/f3538c89-ed09-4c33-812c-fde659d69871)
+
+**Search page:**
+![search](https://github.com/sksusha8853/SKSInsights/assets/77530794/f0a36c6b-21ca-49c7-89bc-ea8d4eaad074)
+
+**Sign In page:**
+![](https://github.com/sksusha8853/SKSInsights/assets/77530794/0dc3d7fc-dcee-4146-ae5b-1bc5214973f5)
+
+**Sign Up page:**
+![](https://github.com/sksusha8853/SKSInsights/assets/77530794/d92939d6-dbf4-4b7a-810d-b06e1e5b90a7)
 
 
